@@ -271,7 +271,7 @@ void AnimatedTexture::_bind_methods() {
 }
 
 AnimatedTexture::AnimatedTexture() {
-	//proxy = RS::get_singleton()->texture_create();
+	//proxy = RS::get_singleton()->texture_create(); todo: is it still required?
 	proxy_ph = RS::get_singleton()->texture_2d_placeholder_create();
 	proxy = RS::get_singleton()->texture_proxy_create(proxy_ph);
 
