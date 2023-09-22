@@ -224,20 +224,9 @@ struct GodotTestCaseListener : public doctest::IReporter {
 		if (name.find("[SceneTree]") != -1) {
 			memnew(MessageQueue);
 
-			memnew(Input);
-			Input::get_singleton()->set_use_accumulated_input(false);
-
-			Error err = OK;
-			OS::get_singleton()->set_has_server_feature_callback(nullptr);
-			for (int i = 0; i < DisplayServer::get_create_function_count(); i++) {
-				if (String("mock") == DisplayServer::get_create_function_name(i)) {
-					DisplayServer::create(i, "", DisplayServer::WindowMode::WINDOW_MODE_MINIMIZED, DisplayServer::VSyncMode::VSYNC_ENABLED, 0, nullptr, Vector2i(0, 0), DisplayServer::SCREEN_PRIMARY, err);
-					break;
-				}
-			}
-			memnew(RenderingServerDefault());
-			RenderingServerDefault::get_singleton()->init();
-			RenderingServerDefault::get_singleton()->set_render_loop_enabled(false);
+			configure_input_singleton();
+			configure_mock_display_server();
+			configure_rendering_server_default();
 
 			// ThemeDB requires RenderingServer to initialize the default theme.
 			// So we have to do this for each test case. Also make sure there is
@@ -265,6 +254,14 @@ struct GodotTestCaseListener : public doctest::IReporter {
 				SceneTree::get_singleton()->get_root()->set_embedding_subwindows(true);
 			}
 			return;
+		}
+
+		if (name.find("[AnimatedTexture]") != -1) {
+			memnew(MessageQueue);
+
+			configure_input_singleton();
+			configure_mock_display_server();
+			configure_rendering_server_default();
 		}
 
 		if (name.find("Audio") != -1) {
@@ -382,6 +379,28 @@ private:
 	void reinitialize() {
 		Math::seed(0x60d07);
 		SignalWatcher::get_singleton()->_clear_signals();
+	}
+
+	void configure_input_singleton() {
+		memnew(Input);
+		Input::get_singleton()->set_use_accumulated_input(false);
+	}
+
+	void configure_mock_display_server() {
+		Error err = OK;
+		OS::get_singleton()->set_has_server_feature_callback(nullptr);
+		for (int i = 0; i < DisplayServer::get_create_function_count(); i++) {
+			if (String("mock") == DisplayServer::get_create_function_name(i)) {
+				DisplayServer::create(i, "", DisplayServer::WindowMode::WINDOW_MODE_MINIMIZED, DisplayServer::VSyncMode::VSYNC_ENABLED, 0, nullptr, Vector2i(0, 0), DisplayServer::SCREEN_PRIMARY, err);
+				break;
+			}
+		}
+	}
+
+	void configure_rendering_server_default() {
+		memnew(RenderingServerDefault());
+		RenderingServerDefault::get_singleton()->init();
+		RenderingServerDefault::get_singleton()->set_render_loop_enabled(false);
 	}
 };
 
