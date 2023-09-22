@@ -31,12 +31,44 @@
 #ifndef TEST_ANIMATED_TEXTURE_H
 #define TEST_ANIMATED_TEXTURE_H
 
+#include "scene/resources/animated_texture.h"
+
 #include "tests/test_macros.h"
 
 namespace TestAnimatedTexture {
 
-TEST_CASE("[AnimatedTexture] Set 0 frames causes an error") {
-    REQUIRE(false);
+TEST_CASE("[AnimatedTexture] Initial configuration") {
+    const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
+
+    CHECK_EQ(sut->get_frames(), 1);
+    CHECK_EQ(sut->get_current_frame(), 0);
+    CHECK_FALSE(sut->get_one_shot());
+    CHECK_EQ(sut->get_frame_duration(0), 1.0f);
+    CHECK_EQ(sut->get_speed_scale(), 1.0f);
+    CHECK_EQ(sut->get_width(), 1);
+    CHECK_EQ(sut->get_height(), 1);
+    CHECK_FALSE(sut->get_rid());
+    CHECK_FALSE(sut->has_alpha());
+}
+
+TEST_CASE("[AnimatedTexture] Can't set 0 frames") {
+    const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
+
+    ERR_PRINT_OFF;
+    sut->set_frames(0);
+    ERR_PRINT_ON;
+
+    CHECK_EQ(sut->get_frames(), 1);
+}
+
+TEST_CASE("[AnimatedTexture] Can't set more than max frames") {
+    const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
+
+    ERR_PRINT_OFF;
+    sut->set_frames(AnimatedTexture::MAX_FRAMES + 1);
+    ERR_PRINT_ON;
+
+    REQUIRE_EQ(sut->get_frames(), 1);
 }
 
 } // namespace TestAnimatedTexture
