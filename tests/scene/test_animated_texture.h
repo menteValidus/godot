@@ -66,6 +66,10 @@ static Ref<Image> create_test_image() {
 	return create_test_image_base(default_channels, default_format);
 }
 
+static Ref<Image> create_test_image_with_alpha() {
+	return create_test_image_base(4, Image::FORMAT_RGBA8);
+}
+
 TEST_CASE("[AnimatedTexture] Initial configuration") {
     const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
 
@@ -157,13 +161,26 @@ TEST_CASE("[AnimatedTexture] Set frame texture") {
 TEST_CASE("[AnimatedTexture] Get image") {
     const Ref<Image> image = create_test_image();
     const Ref<ImageTexture> image_texture = ImageTexture::create_from_image(image);
-    // image_texture->set_image(image);
 
     const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
 
     sut->set_frame_texture(0, image_texture);
 
     REQUIRE_EQ(image->get_data(), sut->get_image()->get_data());
+}
+
+TEST_CASE("[AnimatedTexture] Has alpha") {
+    const Ref<Image> image = create_test_image();
+    const Ref<ImageTexture> image_texture = ImageTexture::create_from_image(image);
+
+    const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
+
+    sut->set_frame_texture(0, image_texture);
+
+    CHECK_FALSE(sut->has_alpha());
+
+    image_texture->set_image(create_test_image_with_alpha());
+    CHECK(sut->has_alpha());
 }
 
 } // namespace TestAnimatedTexture
