@@ -154,6 +154,18 @@ TEST_CASE("[AnimatedTexture] Set frame texture") {
     REQUIRE_EQ(Size2(default_width, default_height), sut->get_size());
 }
 
+TEST_CASE("[AnimatedTexture] Get image") {
+    const Ref<Image> image = create_test_image();
+    const Ref<ImageTexture> image_texture = ImageTexture::create_from_image(image);
+    // image_texture->set_image(image);
+
+    const Ref<AnimatedTexture> sut = memnew(AnimatedTexture);
+
+    sut->set_frame_texture(0, image_texture);
+
+    REQUIRE_EQ(image->get_data(), sut->get_image()->get_data());
+}
+
 } // namespace TestAnimatedTexture
 
 #endif // TEST_ANIMATED_TEXTURE_H
